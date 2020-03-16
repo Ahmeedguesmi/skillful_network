@@ -2,6 +2,8 @@ import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/cor
 import { Skill } from 'src/app/shared/models/skill';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { UserService } from 'src/app/shared/services/user.service';
+import { SkillService } from 'src/app/shared/services/skill.service';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-skill-conf',
@@ -13,6 +15,7 @@ export class SkillConfComponent implements OnInit {
   @Input() skillInfoGroup : FormGroup; 
   @Input() userSkilList : Skill[]; 
 
+  num :number;
   titleAlert: string = 'This field is required';
   post: any = '';
   skills:string[];
@@ -20,9 +23,15 @@ export class SkillConfComponent implements OnInit {
   public skill: string;
   isLoading:boolean;
 
-  constructor(private formBuilder: FormBuilder , private service : UserService) {}
+  constructor(private formBuilder: FormBuilder , private route: ActivatedRoute,private service : UserService, private skillService: SkillService) {}
 
   ngOnInit(): void {
+    this.num =  this.route.snapshot.params.id;
+    this.skillService.getSkillsByUser(this.num).subscribe(data => {
+      console.log(data)
+      this.listSkill = data;
+    }, error => console.log(error));
+
     this.listSkill =  this.userSkilList;
     this.skillInfoGroup.value['skillSet'] = this.listSkill;
     this.skillInfoGroup.valueChanges.subscribe(data=>{
