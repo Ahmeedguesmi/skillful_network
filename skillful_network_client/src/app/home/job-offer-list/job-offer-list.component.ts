@@ -31,18 +31,12 @@ export class JobOfferListComponent implements OnInit {
   pageSize: number;
   pageSizeOptions: number[] = [10, 25, 50, 100];
   pageIndex: number;
-  
+  length: number;
   hidePageSize: boolean = false;
   showFirstLastButtons: boolean = false;
-  
+
   //Pagination variables
   @ViewChild(MatPaginator) paginator: MatPaginator;
-
-  //Event page to get size entities and page index
-  // pageEvent($event) {
-  //   this.pageSize = $event.pageSize;
-  //   this.pageIndex = $event.pageIndex;
-  // }
 
   constructor(public candidatureService: CandidatureService, public offerService: JobOfferService) {
   }
@@ -51,15 +45,16 @@ export class JobOfferListComponent implements OnInit {
     this.getJobOffers(this.paginator);
   }
 
-  getJobOffers(event?:PageEvent) {
+  getJobOffers(event?: PageEvent) {
     if (event == null) {
-      this.pageSize =10;
-      this.pageIndex =1;
+      this.pageSize = 10;
+      this.pageIndex = 1;
     } else {
-      this.pageSize= event.pageSize;
+      this.pageSize = event.pageSize;
       this.pageIndex = event.pageIndex;
     }
-      this.offerService.findAll(this.pageIndex,this.pageSize).then(res => {
+    this.offerService.findAll(this.pageIndex, this.pageSize).then(res => {
+      this.length = res.length;
       this.dataSource = new MatTableDataSource<JobOffer>(res);
       console.log("pageSize function: " + this.pageSize);
       this.dataSource.sort = this.sort;
@@ -72,9 +67,6 @@ export class JobOfferListComponent implements OnInit {
       this.dataSource.sort = this.sort;
     });
   }
-
-  //this.dataSource.paginator = this.paginator;
-  //this.dataSource.sort = this.sort;
 
   findApplicationJob(jobOfferId: number) {
     this.candidatureService.findApplicationJobByJobOffer(jobOfferId).then(res => {
